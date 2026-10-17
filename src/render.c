@@ -10,7 +10,7 @@ int render(GameState *gs)
     printf("%f", gs->x);
    
     SetConfigFlags(FLAG_WINDOW_UNDECORATED);
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "raylib [core] example - input keys");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "z-lander");
 
     Vector2 ballPosition = { gs->x, gs->y };
 
@@ -32,8 +32,8 @@ int render(GameState *gs)
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-            ClearBackground(RAYWHITE);
-            DrawCircleV(ballPosition, 1, BLUE);
+            ClearBackground(BLACK);
+            DrawCircleV(ballPosition, 1, WHITE);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
