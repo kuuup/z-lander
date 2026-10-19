@@ -48,12 +48,13 @@ int render(GameState *gs)
     ballPosition.y = gs->position.y;
     
     BeginDrawing();
+    ClearBackground(BLACK);
+
     for(int x = 0; x < SCREEN_WIDTH; x++)
     {
         DrawPixel(x, get_terrain_height((float)x), WHITE);
     }
 
-    ClearBackground(BLACK);
     DrawPixelV(ballPosition, WHITE);
 
     EndDrawing();
