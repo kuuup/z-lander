@@ -34,35 +34,19 @@ void init_renderer()
 {
     SetConfigFlags(FLAG_WINDOW_UNDECORATED);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "z-lander");
-
-
-    SetTargetFPS(30);               // Set our game to run at 60 frames-per-second
-
+    SetTargetFPS(30);
 }
 
 int render(GameState *gs)
 {
-    // Initialization
-    //--------------------------------------------------------------------------------------
-
-    // Main game loop
-    if (WindowShouldClose())    // Detect window close button or ESC key
-    {
-        CloseWindow();        // Close window and OpenGL context
+    if (WindowShouldClose()) {
+        CloseWindow();
         return 0;
     }
 
-    // Update
-    //----------------------------------------------------------------------------------
-    //if (IsKeyDown(KEY_RIGHT)) ballPosition.x += 1.0f;
-    //if (IsKeyDown(KEY_LEFT)) ballPosition.x -= 1.0f;
-    //if (IsKeyDown(KEY_UP)) ballPosition.y -= 1.0f;
-    //if (IsKeyDown(KEY_DOWN)) ballPosition.y += 1.0f;
-    //----------------------------------------------------------------------------------
     ballPosition.x = gs->position.x;
     ballPosition.y = gs->position.y;
-    // Draw
-    //----------------------------------------------------------------------------------
+    
     BeginDrawing();
     for(int x = 0; x < SCREEN_WIDTH; x++)
     {
@@ -73,10 +57,4 @@ int render(GameState *gs)
     DrawPixelV(ballPosition, WHITE);
 
     EndDrawing();
-        //----------------------------------------------------------------------------------
-
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    //--------------------------------------------------------------------------------------
-
 }
