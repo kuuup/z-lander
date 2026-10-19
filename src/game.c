@@ -12,8 +12,27 @@ GameState *get_gs(void)
 
 void game_init(void)
 {
-    gs.x = 80.0f;
-    gs.y = 10.0f;
-    render(get_gs());
+    gs.position.x = 34.0f;
+    gs.position.y = 10.0f;
+
+    init_renderer();
+    do
+    {
+        if (key_main_pressed())
+        {
+            gs.position.y += 1.0f;
+        }
+
+        if (key_left_pressed())
+        {
+            gs.position.x -= 1.0f;
+        }
+
+        if (key_right_pressed())
+        {
+            gs.position.x += 1.0f;
+        }
+    }
+    while(render(get_gs()));
 }
 

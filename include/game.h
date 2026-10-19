@@ -2,12 +2,16 @@
 #define GAME_H
 
 // Our target platform has a small nice!nano LCD screen
-#define SCREEN_WIDTH 160
-#define SCREEN_HEIGHT 68
+#define SCREEN_WIDTH 68
+#define SCREEN_HEIGHT 160
 
 typedef struct {
     float x;
     float y;
+} Pixel;
+
+typedef struct {
+    Pixel position;
 } GameState;
 
 void game_init();
