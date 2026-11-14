@@ -1,5 +1,6 @@
 #include "../include/game.h"
 #include "../include/terrain.h"
+#include "../include/ship.h"
 
 #include <raylib.h>
 #include <stdio.h>
@@ -44,9 +45,6 @@ int render(GameState *gs)
         return 0;
     }
 
-    ballPosition.x = gs->position.x;
-    ballPosition.y = gs->position.y;
-    
     BeginDrawing();
     ClearBackground(BLACK);
 
@@ -55,7 +53,15 @@ int render(GameState *gs)
         DrawPixel(x, get_terrain_height((float)x), WHITE);
     }
 
-    DrawPixelV(ballPosition, WHITE);
+    int length = get_ship_pixel_length();
+    for(int i = 0; i < length; i++)
+    {
+        Pixel position = get_ship_absolute_pixel(i, gs->position.x, gs->position.y); 
+        ballPosition.x = position.x;
+        ballPosition.y = position.y;
+
+        DrawPixelV(ballPosition, WHITE);
+    }
 
     EndDrawing();
 }
