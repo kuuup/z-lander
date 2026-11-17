@@ -33,7 +33,7 @@ int key_main_pressed() {
 
 void init_renderer()
 {
-    SetConfigFlags(FLAG_WINDOW_UNDECORATED);
+    //SetConfigFlags(FLAG_WINDOW_UNDECORATED);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "z-lander");
     SetTargetFPS(30);
 }
