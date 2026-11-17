@@ -11,21 +11,27 @@ GameState *get_gs(void)
     return &gs;
 }
 
-int is_collision(void)
+void set_game_state(void)
 {
     float x = gs.position.x;
 
     if (x <= 0 || x >= SCREEN_WIDTH)
     {
-        return 1;
+        gs.collision = 1;
     }
     
     float height = get_terrain_height(x);
-    if (gs.position.y >= height)
-    {
-        return 1;
+    if (gs.position.y >= height) {
+        if (gs.vx <= 0.3f && gs.vy <= 0.3f)
+        {
+            // Yay :)
+            gs.landed = 1;
+        }
+        else
+        {
+            gs.collision = 1;
+        }
     }
-    return 0;
 }
 
 void reset_game(void)
@@ -50,7 +56,6 @@ void game_init(void)
 
         if (gs.collision == 0 && gs.landed == 0)
         {
- 
             // set vertical velocity
             if (key_main_pressed())
             {
@@ -75,17 +80,7 @@ void game_init(void)
             gs.position.y += gs.vy;
             gs.position.x += gs.vx;
 
-            gs.collision = is_collision();
-            if (is_collision())
-            {
-                printf("collision\n");
-            }
-            
-            if (gs.position.y >= SCREEN_HEIGHT)
-            {
-                gs.position.y = 10.0f;
-                gs.vy = 0.0;
-            }
+            set_game_state();
         }
         else
         {
@@ -94,7 +89,6 @@ void game_init(void)
                 reset_game();
             }
         }
-
     }
     while(render());
 
