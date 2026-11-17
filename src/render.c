@@ -7,7 +7,7 @@
 
 static Vector2 ballPosition = { 0, 0 };
 
-int key_left_pressed() {
+int key_left_pressed(void) {
     if (IsKeyDown(KEY_LEFT))
     {
         return 1;
@@ -15,7 +15,7 @@ int key_left_pressed() {
     return 0;
 }
 
-int key_right_pressed() {
+int key_right_pressed(void) {
     if (IsKeyDown(KEY_RIGHT))
     {
         return 1;
@@ -23,7 +23,7 @@ int key_right_pressed() {
     return 0;
 }
 
-int key_main_pressed() {
+int key_main_pressed(void) {
     if (IsKeyDown(KEY_UP))
     {
         return 1;
@@ -31,14 +31,22 @@ int key_main_pressed() {
     return 0;
 }
 
-void init_renderer()
+int key_reset_pressed(void) {
+    if (IsKeyDown(KEY_ENTER))
+    {
+        return 1;
+    }
+    return 0;
+}
+
+void init_renderer(void)
 {
     //SetConfigFlags(FLAG_WINDOW_UNDECORATED);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "z-lander");
     SetTargetFPS(30);
 }
 
-int render(GameState *gs)
+int render()
 {
     if (WindowShouldClose()) {
         CloseWindow();
@@ -56,7 +64,7 @@ int render(GameState *gs)
     int length = get_ship_pixel_length();
     for(int i = 0; i < length; i++)
     {
-        Pixel position = get_ship_absolute_pixel(i, gs->position.x, gs->position.y); 
+        Pixel position = get_ship_absolute_pixel(i); //gs->position.x, gs->position.y); 
         ballPosition.x = position.x;
         ballPosition.y = position.y;
 

@@ -1,4 +1,5 @@
 #include <math.h>
+
 #include "../include/game.h"
 
 float get_terrain_height(float x)

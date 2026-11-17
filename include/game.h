@@ -14,6 +14,8 @@ typedef struct {
     Pixel position;
     float vx;
     float vy;
+    int collision;
+    int landed;
 } GameState;
 
 void game_init();
