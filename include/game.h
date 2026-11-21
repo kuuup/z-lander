@@ -16,6 +16,7 @@ typedef struct {
     float vy;
     int collision;
     int landed;
+    int running;
     float fuel;
 } GameState;
 

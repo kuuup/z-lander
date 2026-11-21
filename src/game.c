@@ -38,13 +38,14 @@ void set_game_state(void)
 void reset_game(void)
 {
     gs.position.x = 34.0f;
-    gs.position.y = 10.0f;
+    gs.position.y = 32.0f;
 
     gs.vx = 0.0f;
     gs.vy = 0.0f;
 
     gs.collision = 0;
     gs.landed = 0;
+    gs.running = 1;
 
     gs.fuel = 100.0f;
 }
@@ -52,16 +53,15 @@ void reset_game(void)
 void game_init(void)
 {
     reset_game();
+    gs.running = 0;
     init_renderer();
 
     do
     {
-
-        if (gs.collision == 0 && gs.landed == 0)
+        begin_frame();
+        
+        if (gs.running == 1 && gs.collision == 0 && gs.landed == 0)
         {
-
-            printf("fuel: %f\n", gs.fuel);
-
             if (gs.fuel > 0)
             {
 
@@ -69,27 +69,23 @@ void game_init(void)
                 if (key_main_pressed())
                 {
                     gs.vy -= 0.03f;
-                    gs.fuel -= 0.3f;
+                    gs.fuel -= 0.6f;
                 }
 
                 // set horizonal velocity
                 if (key_left_pressed())
                 {
                     gs.vx -= 0.02f;
-                    gs.fuel -= 0.2f;
+                    gs.fuel -= 0.4f;
                 }
 
                 if (key_right_pressed())
                 {
                     gs.vx += 0.02f;  
-                    gs.fuel -= 0.2f;
+                    gs.fuel -= 0.4f;
                 }
             }
-            else
-            {
-                printf("no fuel");
-            }
-
+            
             // gravitiy
             gs.vy += 0.01f;
             
@@ -101,12 +97,27 @@ void game_init(void)
         }
         else
         {
+            if (gs.collision)
+            {
+                render_text("Game Over", "press", "ENTER");
+            }
+
+            if (gs.landed)
+            {
+                render_text("Touchdown!", "press", "ENTER");
+            }
+
+            if (!gs.running)
+            {
+                render_text("Start Game", "press", "ENTER");
+            }
+
+
             if (key_reset_pressed())
             {
                 reset_game();
             }
         }
-        begin_frame();
         render_terrain();
         render_ship();
         render_telemetry(gs.vx, gs.vy, gs.fuel);

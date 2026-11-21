@@ -88,9 +88,28 @@ void render_terrain(void)
 
 void render_telemetry(float vx, float vy, float fuel)
 {
+
+    // fuel as bar (normalized to SCREEN_SIZE width)
+    if (fuel <= 0)
+    {
+        DrawText("No fuel!", 1, 1, 5, WHITE);
+    }
+    else
+    {
+        DrawRectangle(0, 0, (SCREEN_WIDTH * fuel) / 100, 5, WHITE);
+    }
+        
+    // velocity as text
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "X:%.2f Y:%.2f F:%.0f", vx, vy, fuel);
-    DrawText(buffer, 2, 2, 6, WHITE);
+    snprintf(buffer, sizeof(buffer), "X:%.2f Y:%.2f", vx, vy);
+    DrawText(buffer, 2, 10, 5, WHITE);
+}
+
+void render_text(char *text1, char *text2, char *text3)
+{
+    DrawText(text1, 6, SCREEN_HEIGHT / 3 - 10, 5, WHITE);
+    DrawText(text2, 16, SCREEN_HEIGHT / 3 + 12, 5, WHITE);
+    DrawText(text3, 16, SCREEN_HEIGHT / 3 + 24, 5, WHITE);
 }
  
 int render(int stop)
