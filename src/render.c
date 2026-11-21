@@ -5,7 +5,7 @@
 #include <raylib.h>
 #include <stdio.h>
 
-static Vector2 ballPosition = { 0, 0 };
+static Vector2 pointerPosition = { 0, 0 };
 
 int key_left_pressed(void) {
     if (IsKeyDown(KEY_LEFT))
@@ -70,11 +70,50 @@ void render_ship(void)
     int length = get_ship_pixel_length();
     for(int i = 0; i < length; i++)
     {
-        Pixel position = get_ship_absolute_pixel(i); //gs->position.x, gs->position.y); 
-        ballPosition.x = position.x;
-        ballPosition.y = position.y;
+        Pixel position = get_ship_absolute_pixel(i); 
+        pointerPosition.x = position.x;
+        pointerPosition.y = position.y;
 
-        DrawPixelV(ballPosition, WHITE);
+        DrawPixelV(pointerPosition, WHITE);
+    }
+}
+
+void render_main_thruster(void)
+{
+    int length = get_main_flame_length();
+    for(int i = 0; i < length; i++)
+    {
+        Pixel position = get_main_flame_pixel(i);
+        pointerPosition.x = position.x;
+        pointerPosition.y = position.y;
+
+        DrawPixelV(pointerPosition, WHITE);
+    }
+}
+
+void render_left_thruster(void)
+{
+    int length = get_left_flame_length();
+    for(int i = 0; i < length; i++)
+    {
+        Pixel position = get_left_flame_pixel(i);
+        pointerPosition.x = position.x;
+        pointerPosition.y = position.y;
+
+        DrawPixelV(pointerPosition, WHITE);
+    }
+}
+
+void render_right_thruster(void)
+{
+    int length = get_right_flame_length();
+    for(int i = 0; i < length; i++)
+    {
+        Pixel position = get_right_flame_pixel(i);
+        pointerPosition.x = position.x;
+        pointerPosition.y = position.y;
+
+        DrawPixelV(pointerPosition, WHITE);
     }
 }
 
@@ -105,11 +144,9 @@ void render_telemetry(float vx, float vy, float fuel)
     DrawText(buffer, 2, 10, 5, WHITE);
 }
 
-void render_text(char *text1, char *text2, char *text3)
+void render_text(char *text)
 {
-    DrawText(text1, 6, SCREEN_HEIGHT / 3 - 10, 5, WHITE);
-    DrawText(text2, 16, SCREEN_HEIGHT / 3 + 12, 5, WHITE);
-    DrawText(text3, 16, SCREEN_HEIGHT / 3 + 24, 5, WHITE);
+    DrawText(text, 6, SCREEN_HEIGHT / 3, 5, WHITE);
 }
  
 int render(int stop)

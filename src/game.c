@@ -48,6 +48,7 @@ void reset_game(void)
     gs.running = 1;
 
     gs.fuel = 100.0f;
+
 }
 
 void game_init(void)
@@ -68,6 +69,7 @@ void game_init(void)
                 // set vertical velocity
                 if (key_main_pressed())
                 {
+                    render_main_thruster();
                     gs.vy -= 0.03f;
                     gs.fuel -= 0.6f;
                 }
@@ -75,12 +77,14 @@ void game_init(void)
                 // set horizonal velocity
                 if (key_left_pressed())
                 {
+                    render_right_thruster();
                     gs.vx -= 0.02f;
                     gs.fuel -= 0.4f;
                 }
 
                 if (key_right_pressed())
                 {
+                    render_left_thruster();
                     gs.vx += 0.02f;  
                     gs.fuel -= 0.4f;
                 }
@@ -99,17 +103,17 @@ void game_init(void)
         {
             if (gs.collision)
             {
-                render_text("Game Over", "press", "ENTER");
+                render_text("Game Over\n\npress\nENTER");
             }
 
             if (gs.landed)
             {
-                render_text("Touchdown!", "press", "ENTER");
+                render_text("Touchdown!\n\npress\nENTER");
             }
 
             if (!gs.running)
             {
-                render_text("Start Game", "press", "ENTER");
+                render_text("Start Game\n\npress\nENTER");
             }
 
 

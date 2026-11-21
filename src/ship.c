@@ -34,6 +34,22 @@ static const Pixel explosion_pixels[] = {
     { -4,  5 }, {  4,  5 }, {  0,  9 }, {  0,  1 }
 };
 
+static const Pixel main_flame_pixels[] = {
+    { -1, -1 }, {  0, -1 }, {  1, -1 },
+    { -1, -2 }, {  0, -2 }, {  1, -2 },
+                {  0, -3 }
+};
+
+static const Pixel left_flame_pixels[] = {
+    { -5,  3 }, { -5,  4 },
+    { -6,  3 }
+};
+
+static const Pixel right_flame_pixels[] = {
+    {  5,  3 }, {  5,  4 },
+    {  6,  3 }
+};
+
 int get_ship_pixel_length()
 {
     GameState *gs = get_gs();
@@ -54,5 +70,38 @@ Pixel get_ship_absolute_pixel(int index) //float x, float y)
         return (Pixel){ explosion_pixels[index].x + x, y - explosion_pixels[index].y }; 
     }
     return (Pixel){ ship_pixels[index].x + x, y - ship_pixels[index].y }; 
+}
+
+int get_main_flame_length(void)
+{
+    return sizeof(main_flame_pixels) / sizeof(main_flame_pixels[0]);
+}
+
+Pixel get_main_flame_pixel(int index)
+{
+    GameState *gs = get_gs();
+    return (Pixel){ main_flame_pixels[index].x + gs->position.x, gs->position.y - main_flame_pixels[index].y };
+}
+
+int get_left_flame_length(void)
+{
+    return sizeof(left_flame_pixels) / sizeof(left_flame_pixels[0]);
+}
+
+Pixel get_left_flame_pixel(int index)
+{
+    GameState *gs = get_gs();
+    return (Pixel){ left_flame_pixels[index].x + gs->position.x, gs->position.y - left_flame_pixels[index].y };
+}
+
+int get_right_flame_length(void)
+{
+    return sizeof(right_flame_pixels) / sizeof(right_flame_pixels[0]);
+}
+
+Pixel get_right_flame_pixel(int index)
+{
+    GameState *gs = get_gs();
+    return (Pixel){ right_flame_pixels[index].x + gs->position.x, gs->position.y - right_flame_pixels[index].y };
 }
 
