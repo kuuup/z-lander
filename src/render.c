@@ -39,6 +39,14 @@ int key_reset_pressed(void) {
     return 0;
 }
 
+int key_exit_pressed(void) {
+    if (IsKeyDown(KEY_ESCAPE))
+    {
+        return 1;
+    }
+    return 0;
+}
+
 void init_renderer(void)
 {
     //SetConfigFlags(FLAG_WINDOW_UNDECORATED);
@@ -46,21 +54,19 @@ void init_renderer(void)
     SetTargetFPS(30);
 }
 
-int render()
+void begin_frame(void)
 {
-    if (WindowShouldClose()) {
-        CloseWindow();
-        return 0;
-    }
-
     BeginDrawing();
     ClearBackground(BLACK);
+}
 
-    for(int x = 0; x < SCREEN_WIDTH; x++)
-    {
-        DrawPixel(x, get_terrain_height((float)x), WHITE);
-    }
+void end_frame(void)
+{
+    EndDrawing();
+}
 
+void render_ship(void)
+{
     int length = get_ship_pixel_length();
     for(int i = 0; i < length; i++)
     {
@@ -70,6 +76,29 @@ int render()
 
         DrawPixelV(ballPosition, WHITE);
     }
+}
 
-    EndDrawing();
+void render_terrain(void)
+{
+    for (int x = 0; x < SCREEN_WIDTH; x++)
+    {
+        DrawPixel(x, get_terrain_height((float)x), WHITE);
+    }
+}
+
+void render_telemetry(float vx, float vy, float fuel)
+{
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "X:%.2f Y:%.2f F:%.0f", vx, vy, fuel);
+    DrawText(buffer, 2, 2, 6, WHITE);
+}
+ 
+int render(int stop)
+{
+    if (stop || WindowShouldClose())
+    {
+        CloseWindow();
+        return 0;
+    }
+    return 1;
 }

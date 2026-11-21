@@ -29,6 +29,7 @@ void set_game_state(void)
         }
         else
         {
+            // Boooo :(
             gs.collision = 1;
         }
     }
@@ -44,6 +45,8 @@ void reset_game(void)
 
     gs.collision = 0;
     gs.landed = 0;
+
+    gs.fuel = 100.0f;
 }
 
 void game_init(void)
@@ -56,21 +59,35 @@ void game_init(void)
 
         if (gs.collision == 0 && gs.landed == 0)
         {
-            // set vertical velocity
-            if (key_main_pressed())
-            {
-                gs.vy -= 0.03f;
-            }
 
-            // set horizonal velocity
-            if (key_left_pressed())
-            {
-                gs.vx -= 0.02f;  
-            }
+            printf("fuel: %f\n", gs.fuel);
 
-            if (key_right_pressed())
+            if (gs.fuel > 0)
             {
-                gs.vx += 0.02f;  
+
+                // set vertical velocity
+                if (key_main_pressed())
+                {
+                    gs.vy -= 0.03f;
+                    gs.fuel -= 0.3f;
+                }
+
+                // set horizonal velocity
+                if (key_left_pressed())
+                {
+                    gs.vx -= 0.02f;
+                    gs.fuel -= 0.2f;
+                }
+
+                if (key_right_pressed())
+                {
+                    gs.vx += 0.02f;  
+                    gs.fuel -= 0.2f;
+                }
+            }
+            else
+            {
+                printf("no fuel");
             }
 
             // gravitiy
@@ -89,8 +106,13 @@ void game_init(void)
                 reset_game();
             }
         }
+        begin_frame();
+        render_terrain();
+        render_ship();
+        render_telemetry(gs.vx, gs.vy, gs.fuel);
+        end_frame();
     }
-    while(render());
+    while(render(key_exit_pressed()));
 
 }
 
