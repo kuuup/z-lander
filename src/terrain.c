@@ -1,6 +1,5 @@
 #include "../include/game.h"
 #include "../include/terrain.h"
-#include <math.h>
 #include <stdlib.h>
 
 // height map 

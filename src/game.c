@@ -1,8 +1,6 @@
 #include "../include/game.h"
 #include "../include/render.h"
 #include "../include/terrain.h"
-#include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
 
 static GameState gs;
