@@ -1,3 +1,7 @@
+// raylib as renderer for desktop use
+#ifndef RENDER_H
+#define RENDER_H
+
 #include "game.h"
 
 int key_left_pressed();
@@ -16,5 +20,7 @@ void render_left_thruster(void);
 void render_right_thruster();
 void render_terrain(void);
 void render_telemetry(float vx, float vy, float fuel);
-void render_text(char *text);
+void render_text(const char *text);
 int render(int stop);
+
+#endif

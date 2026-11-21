@@ -7,6 +7,8 @@
 
 static Vector2 pointerPosition = { 0, 0 };
 
+// check for pressed keys
+// used by game loop
 int key_left_pressed(void) {
     if (IsKeyDown(KEY_LEFT))
     {
@@ -49,7 +51,6 @@ int key_exit_pressed(void) {
 
 void init_renderer(void)
 {
-    //SetConfigFlags(FLAG_WINDOW_UNDECORATED);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "z-lander");
     SetTargetFPS(30);
 }
@@ -65,6 +66,7 @@ void end_frame(void)
     EndDrawing();
 }
 
+// render methods iterate over ship and terrain pixels
 void render_ship(void)
 {
     int length = get_ship_pixel_length();
@@ -125,10 +127,11 @@ void render_terrain(void)
     }
 }
 
+// render telemetry on top of screen (velocity and fuel level)
 void render_telemetry(float vx, float vy, float fuel)
 {
 
-    // fuel as bar (normalized to SCREEN_SIZE width)
+    // fuel as bar (normalized to SCREEN_WIDTH width)
     if (fuel <= 0)
     {
         DrawText("No fuel!", 1, 1, 5, WHITE);
@@ -144,11 +147,13 @@ void render_telemetry(float vx, float vy, float fuel)
     DrawText(buffer, 2, 10, 5, WHITE);
 }
 
-void render_text(char *text)
+// draw text in main menu
+void render_text(const char *text)
 {
-    DrawText(text, 6, SCREEN_HEIGHT / 3, 5, WHITE);
+    DrawText(text, 6, 6, 5, WHITE);
 }
- 
+
+// executed by game loop
 int render(int stop)
 {
     if (stop || WindowShouldClose())

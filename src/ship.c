@@ -1,8 +1,8 @@
 #include "../include/game.h"
 #include "../include/ship.h"
 
-// Relative pixel positions for our ship
-// We start at bottom center for easyier collision testing
+// relative pixel positions for our ship
+// we start relative to center for easier collision testing
 static const Pixel ship_pixels[] = {
     {  0,  0 },
 
@@ -22,6 +22,7 @@ static const Pixel ship_pixels[] = {
     {  0, 11 }
 };
 
+// use pixels when crashed
 static const Pixel explosion_pixels[] = {
     {  0,  5 }, { -1,  5 }, {  1,  5 }, {  0,  6 }, {  0,  4 },
     
@@ -34,6 +35,7 @@ static const Pixel explosion_pixels[] = {
     { -4,  5 }, {  4,  5 }, {  0,  9 }, {  0,  1 }
 };
 
+// use when engines are used
 static const Pixel main_flame_pixels[] = {
     { -1, -1 }, {  0, -1 }, {  1, -1 },
     { -1, -2 }, {  0, -2 }, {  1, -2 },
@@ -60,7 +62,8 @@ int get_ship_pixel_length()
     return sizeof(ship_pixels) / sizeof(ship_pixels[0]);
 }
 
-Pixel get_ship_absolute_pixel(int index) //float x, float y)
+// translate ship pixels to current ship position
+Pixel get_ship_absolute_pixel(int index)
 {
     GameState *gs = get_gs();
     float x = gs->position.x;
@@ -77,6 +80,7 @@ int get_main_flame_length(void)
     return sizeof(main_flame_pixels) / sizeof(main_flame_pixels[0]);
 }
 
+// same as ship pixels but for engine
 Pixel get_main_flame_pixel(int index)
 {
     GameState *gs = get_gs();
@@ -88,6 +92,7 @@ int get_left_flame_length(void)
     return sizeof(left_flame_pixels) / sizeof(left_flame_pixels[0]);
 }
 
+// same as ship pixels but for engine
 Pixel get_left_flame_pixel(int index)
 {
     GameState *gs = get_gs();
@@ -99,6 +104,7 @@ int get_right_flame_length(void)
     return sizeof(right_flame_pixels) / sizeof(right_flame_pixels[0]);
 }
 
+// same as ship pixels but for engine
 Pixel get_right_flame_pixel(int index)
 {
     GameState *gs = get_gs();

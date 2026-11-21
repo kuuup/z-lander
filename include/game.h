@@ -10,17 +10,31 @@ typedef struct {
     float y;
 } Pixel;
 
+// represents state of current game 
 typedef struct {
+    // current ship postion
     Pixel position;
+    
+    // vertical and horizontal velocity
     float vx;
     float vy;
+
+    // true when crashed
     int collision;
+
+    // true when landed 
     int landed;
+
+    // game is running 
     int running;
+
+    // engines use fuel, save current fuel level
     float fuel;
 } GameState;
 
 void game_init();
+
+// get game state
 GameState *get_gs(void);
 
 #endif
