@@ -1,6 +1,6 @@
 # AI-assisted: Zephyr/ZMK CMake build integration for Z-Lander
 if(CONFIG_Z_LANDER)
-  target_include_directories(app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+  zephyr_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
   target_sources(app PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/game.c
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ship.c
