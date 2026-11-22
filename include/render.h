@@ -11,7 +11,6 @@ int key_reset_pressed();
 int key_exit_pressed();
 
 void init_renderer();
-
 void begin_frame(void);
 void end_frame(void);
 void render_ship(void);

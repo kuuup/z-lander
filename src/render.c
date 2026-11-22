@@ -5,7 +5,10 @@
 #include <raylib.h>
 #include <stdio.h>
 
+#define SCALE 4
+
 static Vector2 pointerPosition = { 0, 0 };
+static RenderTexture2D target;
 
 // check for pressed keys
 // used by game loop
@@ -49,20 +52,36 @@ int key_exit_pressed(void) {
     return 0;
 }
 
+// AI-assisted: initialize scaled desktop window and 68x160 off-screen render texture
 void init_renderer(void)
 {
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "z-lander");
+    InitWindow(SCREEN_WIDTH * SCALE, SCREEN_HEIGHT * SCALE, "z-lander");
     SetTargetFPS(30);
+
+    target = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+    SetTextureFilter(target.texture, TEXTURE_FILTER_POINT);
 }
 
+// AI-assisted: begin rendering into the off-screen render texture
 void begin_frame(void)
 {
-    BeginDrawing();
+    BeginTextureMode(target);
     ClearBackground(BLACK);
 }
 
+// AI-assisted: finish texture rendering and draw scaled output to the window
 void end_frame(void)
 {
+    EndTextureMode();
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    // Negative source height flips the inverted OpenGL Y-axis
+    Rectangle src = { 0.0f, 0.0f, (float)SCREEN_WIDTH, -(float)SCREEN_HEIGHT };
+    Rectangle dst = { 0.0f, 0.0f, (float)(SCREEN_WIDTH * SCALE), (float)(SCREEN_HEIGHT * SCALE) };
+    DrawTexturePro(target.texture, src, dst, (Vector2){ 0.0f, 0.0f }, 0.0f, WHITE);
+
     EndDrawing();
 }
 
@@ -158,6 +177,7 @@ int render(int stop)
 {
     if (stop || WindowShouldClose())
     {
+        UnloadRenderTexture(target);
         CloseWindow();
         return 0;
     }

@@ -23,7 +23,8 @@ int check_collision(void)
     }
 
     // check if we landed on a flat surface
-    for (int i = x - LANDING_PAD_WIDTH / 2; i < x + LANDING_PAD_WIDTH / 2; i++)
+    // we check 4 pixels left and right because our ship is 9 pixels wide
+    for (int i = x - 4; i < x + 4 / 2; i++)
     {
         if (fabsf(get_terrain_height(i) - height) > 1)
         {
