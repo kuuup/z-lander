@@ -6,6 +6,7 @@ CFLAGS = -Wall -Wextra -Wstrict-prototypes -std=c99 -g
 
 # Directories
 SRC_DIR = src
+DESKTOP_DIR = $(SRC_DIR)/platform/desktop
 INC_DIR = include
 BUILD_DIR = build
 RAYLIB_DIR = external/raylib
@@ -20,10 +21,13 @@ LDFLAGS = -L$(RAYLIB_DIR)/src -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 # Output binary name
 TARGET = z-lander
 
-# Automatically detect all .c source files in src/ and .h header files in include/
-SRCS = $(wildcard $(SRC_DIR)/*.c)
+# Automatically detect core and desktop .c source files and .h header files
+CORE_SRCS = $(wildcard $(SRC_DIR)/*.c)
+DESKTOP_SRCS = $(wildcard $(DESKTOP_DIR)/*.c)
 HDRS = $(wildcard $(INC_DIR)/*.h)
-OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
+CORE_OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(CORE_SRCS))
+DESKTOP_OBJS = $(patsubst $(DESKTOP_DIR)/%.c, $(BUILD_DIR)/%.o, $(DESKTOP_SRCS))
+OBJS = $(CORE_OBJS) $(DESKTOP_OBJS)
 
 # Default build target
 all: $(BUILD_DIR) $(RAYLIB_LIB) $(TARGET)
@@ -45,8 +49,12 @@ $(RAYLIB_LIB): | $(RAYLIB_DIR)
 $(TARGET): $(OBJS) $(RAYLIB_LIB)
 	$(CC) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
-# Compile C source files into object files
+# Compile core C source files into object files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(HDRS) | $(BUILD_DIR) $(RAYLIB_DIR)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# Compile desktop platform C source files into object files
+$(BUILD_DIR)/%.o: $(DESKTOP_DIR)/%.c $(HDRS) | $(BUILD_DIR) $(RAYLIB_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Clean project build artifacts (leaves Raylib intact)

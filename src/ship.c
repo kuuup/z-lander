@@ -1,5 +1,5 @@
-#include "../include/game.h"
-#include "../include/ship.h"
+#include "game.h"
+#include "ship.h"
 
 // relative pixel positions for our ship
 // we start relative to center for easier collision testing

@@ -1,5 +1,5 @@
-#include "../include/game.h"
-#include "../include/terrain.h"
+#include "game.h"
+#include "terrain.h"
 #include <stdlib.h>
 
 // height map 

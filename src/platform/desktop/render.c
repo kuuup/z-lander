@@ -1,6 +1,7 @@
-#include "../include/game.h"
-#include "../include/terrain.h"
-#include "../include/ship.h"
+#include "game.h"
+#include "render.h"
+#include "terrain.h"
+#include "ship.h"
 
 #include <raylib.h>
 #include <stdio.h>
