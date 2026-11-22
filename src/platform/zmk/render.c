@@ -1,4 +1,4 @@
-// AI-assisted: ZMK/LVGL renderer and input bridge for the Sharp MIP display
+// AI-assisted: Direct Zephyr display_write() renderer and ZMK input bridge for the Sharp MIP display
 #include "game.h"
 #include "render.h"
 #include "ship.h"
@@ -12,6 +12,8 @@
 #include <string.h>
 
 #include <lvgl.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/display.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zmk/display.h>
@@ -30,10 +32,23 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #define KEY_POS_SPACE 38 // Space (left thumb)
 #define KEY_POS_ENTER 39 // Enter (right thumb)
 
-#define ZLANDER_FRAME_MS 33 // ~30 FPS (matches desktop target)
+#define ZLANDER_FRAME_MS 33 // 30 FPS (matches desktop target)
 
-static lv_obj_t *canvas = NULL;
-static lv_color_t cbuf[SCREEN_HEIGHT * SCREEN_WIDTH];
+// Physical Sharp MIP dimensions (160x68 landscape, 1-bit packed horizontal)
+#define PHYS_WIDTH SCREEN_HEIGHT
+#define PHYS_HEIGHT SCREEN_WIDTH
+#define PHYS_STRIDE (PHYS_WIDTH / 8)
+
+static const struct device *display_dev = DEVICE_DT_GET(DT_CHOSEN(zephyr_display));
+static lv_obj_t *screen_root = NULL;
+static uint8_t fb[PHYS_HEIGHT * PHYS_STRIDE];
+static const struct display_buffer_descriptor fb_desc = {
+    .buf_size = sizeof(fb),
+    .width = PHYS_WIDTH,
+    .height = PHYS_HEIGHT,
+    .pitch = PHYS_WIDTH,
+};
+
 static struct k_work_delayable zlander_tick_work;
 
 static volatile bool game_active = false;
@@ -42,17 +57,7 @@ static volatile bool input_main = false;
 static volatile bool input_right = false;
 static volatile bool input_reset = false;
 
-static lv_color_t bg_color(void)
-{
-    return IS_ENABLED(CONFIG_SHARP_MIP_WIDGET_INVERTED) ? lv_color_black() : lv_color_white();
-}
-
-static lv_color_t fg_color(void)
-{
-    return IS_ENABLED(CONFIG_SHARP_MIP_WIDGET_INVERTED) ? lv_color_white() : lv_color_black();
-}
-
-// Fast direct write into the 160x68 canvas buffer with 90-degree portrait rotation
+// Direct write into the packed 1-bit Sharp MIP framebuffer with 90-degree portrait rotation
 static void draw_pixel(int x, int y)
 {
     if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT)
@@ -68,7 +73,17 @@ static void draw_pixel(int x, int y)
     int phys_y = x;
 #endif
 
-    cbuf[phys_y * SCREEN_HEIGHT + phys_x] = fg_color();
+    int byte_idx = phys_y * PHYS_STRIDE + (phys_x >> 3);
+    uint8_t mask = (uint8_t)(1U << (phys_x & 7));
+
+    if (IS_ENABLED(CONFIG_SHARP_MIP_WIDGET_INVERTED))
+    {
+        fb[byte_idx] |= mask;
+    }
+    else
+    {
+        fb[byte_idx] &= (uint8_t)~mask;
+    }
 }
 
 static void draw_rect(int x, int y, int w, int h)
@@ -234,19 +249,19 @@ int key_exit_pressed(void)
 
 void init_renderer(void)
 {
-    // Canvas is initialized once in zmk_zlander_init()
+    // Display device is initialized by Zephyr at boot
 }
 
 void begin_frame(void)
 {
-    memset(cbuf, bg_color().full, sizeof(cbuf));
+    memset(fb, IS_ENABLED(CONFIG_SHARP_MIP_WIDGET_INVERTED) ? 0x00 : 0xFF, sizeof(fb));
 }
 
 void end_frame(void)
 {
-    if (canvas != NULL)
+    if (device_is_ready(display_dev))
     {
-        lv_obj_invalidate(canvas);
+        display_write(display_dev, 0, 0, &fb_desc, fb);
     }
 }
 
@@ -382,8 +397,6 @@ static void zlander_tick_handler(struct k_work *work)
 
     if (game_tick())
     {
-        lv_refr_now(NULL);
-
         uint32_t elapsed_ms = k_uptime_get_32() - start_ms;
         uint32_t delay_ms = (elapsed_ms < ZLANDER_FRAME_MS) ? (ZLANDER_FRAME_MS - elapsed_ms) : 1;
         k_work_schedule_for_queue(zmk_display_work_q(), &zlander_tick_work, K_MSEC(delay_ms));
@@ -404,11 +417,6 @@ static struct zlander_layer_state zlander_layer_get_state(const zmk_event_t *eh)
 
 static void zlander_layer_update_cb(struct zlander_layer_state state)
 {
-    if (canvas == NULL)
-    {
-        return;
-    }
-
     if (state.active && !game_active)
     {
         game_active = true;
@@ -418,7 +426,6 @@ static void zlander_layer_update_cb(struct zlander_layer_state state)
         input_reset = false;
 
         srand(k_uptime_get_32());
-        lv_obj_clear_flag(canvas, LV_OBJ_FLAG_HIDDEN);
         game_init();
         k_work_schedule_for_queue(zmk_display_work_q(), &zlander_tick_work, K_NO_WAIT);
     }
@@ -431,9 +438,11 @@ static void zlander_layer_update_cb(struct zlander_layer_state state)
         input_reset = false;
 
         k_work_cancel_delayable(&zlander_tick_work);
-        lv_obj_add_flag(canvas, LV_OBJ_FLAG_HIDDEN);
-        lv_obj_invalidate(lv_obj_get_parent(canvas));
-        lv_refr_now(NULL);
+        if (screen_root != NULL)
+        {
+            lv_obj_invalidate(screen_root);
+            lv_refr_now(NULL);
+        }
     }
 }
 
@@ -443,11 +452,7 @@ ZMK_SUBSCRIPTION(zlander_layer_widget, zmk_layer_state_changed);
 
 void zmk_zlander_init(lv_obj_t *parent)
 {
-    canvas = lv_canvas_create(parent);
-    lv_canvas_set_buffer(canvas, cbuf, SCREEN_HEIGHT, SCREEN_WIDTH, LV_IMG_CF_TRUE_COLOR);
-    lv_obj_align(canvas, LV_ALIGN_TOP_LEFT, 0, 0);
-    lv_obj_add_flag(canvas, LV_OBJ_FLAG_HIDDEN);
-
+    screen_root = parent;
     k_work_init_delayable(&zlander_tick_work, zlander_tick_handler);
     zlander_layer_widget_init();
 }
