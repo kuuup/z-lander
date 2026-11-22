@@ -2,7 +2,7 @@
 
 # Compiler and compiler flags
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -g
+CFLAGS = -Wall -Wextra -Wstrict-prototypes -std=c99 -g
 
 # Directories
 SRC_DIR = src
@@ -20,8 +20,9 @@ LDFLAGS = -L$(RAYLIB_DIR)/src -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 # Output binary name
 TARGET = z-lander
 
-# Automatically detect all .c source files in src/
+# Automatically detect all .c source files in src/ and .h header files in include/
 SRCS = $(wildcard $(SRC_DIR)/*.c)
+HDRS = $(wildcard $(INC_DIR)/*.h)
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRCS))
 
 # Default build target
@@ -45,7 +46,7 @@ $(TARGET): $(OBJS) $(RAYLIB_LIB)
 	$(CC) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
 # Compile C source files into object files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(RAYLIB_DIR)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(HDRS) | $(BUILD_DIR) $(RAYLIB_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Clean project build artifacts (leaves Raylib intact)

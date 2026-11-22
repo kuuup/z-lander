@@ -52,7 +52,7 @@ static const Pixel right_flame_pixels[] = {
     {  6,  3 }
 };
 
-int get_ship_pixel_length()
+int get_ship_pixel_length(void)
 {
     GameState *gs = get_gs();
     if (gs->collision == 1)

@@ -3,7 +3,7 @@
 
 #include "game.h"
 
-int get_ship_pixel_length();
+int get_ship_pixel_length(void);
 Pixel get_ship_absolute_pixel(int index);
 
 int get_main_flame_length(void);

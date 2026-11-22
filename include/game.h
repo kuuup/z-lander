@@ -32,7 +32,7 @@ typedef struct {
     float fuel;
 } GameState;
 
-void game_init();
+void game_init(void);
 
 // get game state
 GameState *get_gs(void);
