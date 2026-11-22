@@ -1,0 +1,5 @@
+# AI-assisted: Zephyr module descriptor for Z-Lander
+name: z-lander
+build:
+  cmake: .
+  kconfig: Kconfig

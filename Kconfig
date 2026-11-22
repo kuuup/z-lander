@@ -1,0 +1,7 @@
+# AI-assisted: Kconfig option to enable the Z-Lander game widget in ZMK
+config Z_LANDER
+    bool "Enable Z-Lander game widget for ZMK"
+    depends on ZMK_DISPLAY
+    depends on !ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL
+    select LV_USE_CANVAS
+    default n
