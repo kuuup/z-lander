@@ -24,7 +24,7 @@ int check_collision(void)
 
     // check if we landed on a flat surface
     // we check 4 pixels left and right because our ship is 9 pixels wide
-    for (int i = x - 4; i < x + 4 / 2; i++)
+    for (int i = x - 4; i <= x + 4; i++)
     {
         if (fabsf(get_terrain_height(i) - height) > 1)
         {
@@ -86,88 +86,89 @@ void game_init(void)
     reset_game();
     gs.running = 0;
     init_renderer();
+}
 
-    do
+int game_tick(void)
+{
+
+    // control render loop 
+    begin_frame();
+    
+    if (gs.running == 1 && gs.collision == 0 && gs.landed == 0)
     {
-
-        // control render loop 
-        begin_frame();
-        
-        if (gs.running == 1 && gs.collision == 0 && gs.landed == 0)
+        if (gs.fuel > 0)
         {
-            if (gs.fuel > 0)
+
+            // set vertical velocity
+            if (key_main_pressed())
             {
-
-                // set vertical velocity
-                if (key_main_pressed())
-                {
-                    render_main_thruster();
-                    gs.vy -= 0.03f;
-                    gs.fuel -= 0.9f;
-                }
-
-                // set horizontal velocity
-                if (key_left_pressed())
-                {
-                    render_right_thruster();
-                    gs.vx -= 0.02f;
-                    gs.fuel -= 0.6f;
-                }
-
-                if (key_right_pressed())
-                {
-                    render_left_thruster();
-                    gs.vx += 0.02f;  
-                    gs.fuel -= 0.6f;
-                }
+                render_main_thruster();
+                gs.vy -= 0.03f;
+                gs.fuel -= 0.9f;
             }
-            
-            // gravity
-            gs.vy += 0.01f;
-            
-            // set position 
-            gs.position.y += gs.vy;
-            gs.position.x += gs.vx;
 
-            set_game_state();
+            // set horizontal velocity
+            if (key_left_pressed())
+            {
+                render_right_thruster();
+                gs.vx -= 0.02f;
+                gs.fuel -= 0.6f;
+            }
+
+            if (key_right_pressed())
+            {
+                render_left_thruster();
+                gs.vx += 0.02f;  
+                gs.fuel -= 0.6f;
+            }
+        }
+        
+        // gravity
+        gs.vy += 0.01f;
+        
+        // set position 
+        gs.position.y += gs.vy;
+        gs.position.x += gs.vx;
+
+        set_game_state();
+        render_terrain();
+        render_ship();
+        render_telemetry(gs.vx, gs.vy, gs.fuel);
+    }
+    else
+    {
+        if (gs.collision)
+        {
+            render_text("Crash!\nGame Over\n\npress\nENTER");
             render_terrain();
             render_ship();
-            render_telemetry(gs.vx, gs.vy, gs.fuel);
+
         }
-        else
+
+        if (gs.landed)
         {
-            if (gs.collision)
-            {
-                render_text("Crash!\nGame Over\n\npress\nENTER");
-                render_terrain();
-                render_ship();
-
-            }
-
-            if (gs.landed)
-            {
-                render_terrain();
-                render_ship();
-                render_text("Touchdown!\n\npress\nENTER");
-            }
-
-            if (!gs.running)
-            {
-                render_text("Start Game\n\npress\nENTER");
-            }
-
-            // restart game
-            if (key_reset_pressed())
-            {
-                reset_game();
-            }
+            render_terrain();
+            render_ship();
+            render_text("Touchdown!\n\npress\nENTER");
         }
 
-        // control render loop 
-        end_frame();
+        if (!gs.running)
+        {
+            render_text("Start Game\n\npress\nENTER");
+        }
+
+        // restart game
+        if (key_reset_pressed())
+        {
+            reset_game();
+        }
     }
+
+    // control render loop 
+    end_frame();
+    
     // run while window is open and exit key is not pressed
-    while(render(key_exit_pressed()));
+    return render(key_exit_pressed());
 
 }
 

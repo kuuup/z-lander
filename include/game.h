@@ -33,6 +33,7 @@ typedef struct {
 } GameState;
 
 void game_init(void);
+int game_tick(void);
 
 // get game state
 GameState *get_gs(void);
