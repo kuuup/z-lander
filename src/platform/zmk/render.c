@@ -26,6 +26,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 // Layer and physical key positions for the 42-key Piantor Pro BT
 #define ZLANDER_LAYER 4
+#define KEY_POS_INVERT 1 // Q (right next to ESC)
 #define KEY_POS_LEFT 13  // A
 #define KEY_POS_MAIN 14  // S
 #define KEY_POS_RIGHT 15 // D
@@ -52,6 +53,7 @@ static const struct display_buffer_descriptor fb_desc = {
 static struct k_work_delayable zlander_tick_work;
 
 static volatile bool game_active = false;
+static volatile bool invert_colors = IS_ENABLED(CONFIG_SHARP_MIP_WIDGET_INVERTED);
 static volatile bool input_left = false;
 static volatile bool input_main = false;
 static volatile bool input_right = false;
@@ -76,13 +78,13 @@ static void draw_pixel(int x, int y)
     int byte_idx = phys_y * PHYS_STRIDE + (phys_x >> 3);
     uint8_t mask = (uint8_t)(1U << (phys_x & 7));
 
-    if (IS_ENABLED(CONFIG_SHARP_MIP_WIDGET_INVERTED))
+    if (invert_colors)
     {
-        fb[byte_idx] |= mask;
+        fb[byte_idx] &= (uint8_t)~mask;
     }
     else
     {
-        fb[byte_idx] &= (uint8_t)~mask;
+        fb[byte_idx] |= mask;
     }
 }
 
@@ -254,7 +256,7 @@ void init_renderer(void)
 
 void begin_frame(void)
 {
-    memset(fb, IS_ENABLED(CONFIG_SHARP_MIP_WIDGET_INVERTED) ? 0x00 : 0xFF, sizeof(fb));
+    memset(fb, invert_colors ? 0xFF : 0x00, sizeof(fb));
 }
 
 void end_frame(void)
@@ -361,6 +363,12 @@ static int zlander_position_listener(const zmk_event_t *eh)
 
     switch (ev->position)
     {
+    case KEY_POS_INVERT:
+        if (ev->state)
+        {
+            invert_colors = !invert_colors;
+        }
+        break;
     case KEY_POS_LEFT:
         input_left = ev->state;
         break;
