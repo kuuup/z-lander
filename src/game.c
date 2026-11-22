@@ -60,7 +60,7 @@ void set_game_state(void)
 void reset_game(void)
 {
     // ship starts here 
-    gs.position.x = SCREEN_WIDTH / 2;
+    gs.position.x = SCREEN_WIDTH / 1.5;
     gs.position.y = 32.0f;
 
     // ship is floating

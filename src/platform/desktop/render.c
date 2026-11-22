@@ -163,7 +163,7 @@ void render_telemetry(float vx, float vy, float fuel)
         
     // velocity as text
     char buffer[64];
-    snprintf(buffer, sizeof(buffer), "X:%.2f Y:%.2f", vx, vy);
+    snprintf(buffer, sizeof(buffer), "X:%.2f\nY:%.2f", vx, vy);
     DrawText(buffer, 2, 10, 5, WHITE);
 }
 
